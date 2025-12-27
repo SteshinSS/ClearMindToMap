@@ -129,28 +129,37 @@ function displayCharacter(char) {
 
 function moveTextUp() {
   const spans = textContainer.querySelectorAll('span');
-  const containerWidth = textContainer.offsetWidth;
+  const containerRect = textContainer.getBoundingClientRect();
 
-  // Capture positions from the RIGHT edge (for right-aligned text stability)
+  // Capture positions using getBoundingClientRect for precision
   const positions = [];
   spans.forEach(span => {
-    // Distance from right edge = containerWidth - offsetLeft - spanWidth
-    const rightPos = containerWidth - span.offsetLeft - span.offsetWidth;
+    const rect = span.getBoundingClientRect();
+    // Distance from left edge of container
+    const leftPos = rect.left - containerRect.left;
+    // Distance from top of container
+    const topPos = rect.top - containerRect.top;
     positions.push({
       span,
-      right: rightPos
+      left: leftPos,
+      top: topPos
     });
   });
 
-  // Apply absolute positioning using 'right' to keep text stable
-  positions.forEach(({ span, right }) => {
+  // Apply absolute positioning preserving exact positions
+  positions.forEach(({ span, left, top }) => {
     span.style.position = 'absolute';
-    span.style.right = `${right}px`;
-    span.style.left = 'auto';
+    span.style.left = `${left}px`;
+    span.style.top = `${top}px`;
+    span.style.right = 'auto';
+  });
 
-    // Use margin-top for upward animation
-    const currentMargin = parseInt(span.style.marginTop) || 0;
-    span.style.marginTop = `${currentMargin - 50}px`;
+  // Force reflow so browser registers initial positions
+  textContainer.offsetHeight;
+
+  // Now animate upward
+  positions.forEach(({ span, top }) => {
+    span.style.top = `${top - 50}px`;
   });
 }
 

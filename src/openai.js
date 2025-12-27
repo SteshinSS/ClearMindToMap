@@ -111,6 +111,7 @@ export async function analyzeSession(apiKey, sessionText) {
 
   const response = await client.responses.create({
     model: 'gpt-5.2',
+    reasoning: { effort: "high" },
     input: fullPrompt
   });
 

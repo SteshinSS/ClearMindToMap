@@ -18,7 +18,7 @@ const mindmapView = document.getElementById('mindmap-view');
 const textContainer = document.getElementById('text-container');
 const hiddenInput = document.getElementById('hidden-input');
 const apiKeyInput = document.getElementById('api-key-input');
-const apiKeySaved = document.getElementById('api-key-saved');
+const apiKeyBtn = document.getElementById('api-key-btn');
 const endSessionBtn = document.getElementById('end-session-btn');
 const newSessionBtn = document.getElementById('new-session-btn');
 const loadingEl = document.getElementById('loading');
@@ -36,15 +36,12 @@ function init() {
   const savedKey = getApiKey();
   if (savedKey) {
     apiKeyInput.value = savedKey;
-    showApiKeySaved();
+    collapseApiKey();
   }
 
   // API key handlers
-  apiKeyInput.addEventListener('input', handleApiKeyChange);
-  apiKeyInput.addEventListener('blur', () => {
-    handleApiKeyChange();
-    focusInput();
-  });
+  apiKeyInput.addEventListener('blur', handleApiKeyBlur);
+  apiKeyBtn.addEventListener('click', expandApiKey);
 
   // Button handlers
   endSessionBtn.addEventListener('click', handleEndSession);
@@ -56,25 +53,25 @@ function init() {
 }
 
 // API Key handling
-function handleApiKeyChange() {
+function handleApiKeyBlur() {
   const key = apiKeyInput.value.trim();
   setApiKey(key);
 
   if (key) {
-    showApiKeySaved();
-  } else {
-    hideApiKeySaved();
+    collapseApiKey();
   }
+  focusInput();
 }
 
-function showApiKeySaved() {
-  apiKeyInput.classList.add('saved');
-  apiKeySaved.classList.add('visible');
+function collapseApiKey() {
+  apiKeyInput.classList.add('hidden');
+  apiKeyBtn.classList.add('visible');
 }
 
-function hideApiKeySaved() {
-  apiKeyInput.classList.remove('saved');
-  apiKeySaved.classList.remove('visible');
+function expandApiKey() {
+  apiKeyInput.classList.remove('hidden');
+  apiKeyBtn.classList.remove('visible');
+  apiKeyInput.focus();
 }
 
 // Session handling
@@ -88,7 +85,7 @@ async function handleEndSession() {
 
   if (!apiKey) {
     showError('Please enter your OpenAI API key');
-    apiKeyInput.focus();
+    expandApiKey();
     return;
   }
 
