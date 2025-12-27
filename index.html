@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Clear My Mind</title>
+</head>
+<body>
+  <div id="app">
+    <!-- Typing View -->
+    <div id="typing-view" class="view active">
+      <div id="text-container"></div>
+      <div id="hint">Click anywhere and start typing...</div>
+      <input type="text" id="hidden-input" autocomplete="off" />
+    </div>
+
+    <!-- Mind Map View -->
+    <div id="mindmap-view" class="view">
+      <svg id="mindmap-svg"></svg>
+    </div>
+
+    <!-- Loading View -->
+    <div id="loading" class="view">
+      <div class="spinner"></div>
+      <div class="loading-text">Analyzing your thoughts...</div>
+    </div>
+
+    <!-- Controls -->
+    <div class="controls">
+      <div class="api-key-group">
+        <input
+          type="password"
+          id="api-key-input"
+          placeholder="OpenAI API Key"
+          autocomplete="off"
+        />
+        <span id="api-key-saved">Saved</span>
+      </div>
+      <button id="end-session-btn" class="btn btn-primary">End Session</button>
+      <button id="new-session-btn" class="btn">New Session</button>
+    </div>
+
+    <!-- Error Toast -->
+    <div id="error"></div>
+
+    <!-- Session Info -->
+    <div id="session-info"></div>
+  </div>
+
+  <script type="module" src="/src/main.js"></script>
+</body>
+</html>
