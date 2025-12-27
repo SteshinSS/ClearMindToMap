@@ -217,8 +217,51 @@ html, body {
 }
 
 /* Markmap text color override for dark theme */
-#mindmap-svg text {
+#mindmap-svg text,
+#mindmap-svg .markmap-node text,
+#mindmap-svg .markmap-foreign text,
+.markmap text {
   fill: #ffffff !important;
+  color: #ffffff !important;
+}
+
+#mindmap-svg .markmap-foreign,
+#mindmap-svg foreignObject,
+#mindmap-svg foreignObject * {
+  color: #ffffff !important;
+}
+
+/* Copy button */
+#copy-mindmap-btn {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  padding: 10px 20px;
+  background: rgba(74, 144, 226, 0.2);
+  border: 1px solid rgba(74, 144, 226, 0.4);
+  border-radius: 8px;
+  color: #c5c4c4;
+  font-size: 14px;
+  font-family: inherit;
+  cursor: pointer;
+  transition: all 0.2s;
+  opacity: 0;
+  pointer-events: none;
+  z-index: 100;
+}
+
+#copy-mindmap-btn.visible {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+#copy-mindmap-btn:hover {
+  background: rgba(74, 144, 226, 0.35);
+}
+
+#copy-mindmap-btn.copied {
+  background: rgba(74, 222, 128, 0.2);
+  border-color: rgba(74, 222, 128, 0.4);
 }
 
 /* Error message */
@@ -240,13 +283,4 @@ html, body {
 
 #error.visible {
   opacity: 1;
-}
-
-/* Session info */
-#session-info {
-  position: fixed;
-  bottom: 20px;
-  left: 20px;
-  font-size: 14px;
-  color: rgba(255, 255, 255, 0.25);
 }

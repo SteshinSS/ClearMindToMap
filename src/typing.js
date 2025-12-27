@@ -12,17 +12,23 @@ import {
 let textContainer = null;
 let hiddenInput = null;
 let onSessionStart = null;
+let hintElement = null;
 
 export function initTyping(container, input, onStart) {
   textContainer = container;
   hiddenInput = input;
   onSessionStart = onStart;
+  hintElement = document.getElementById('hint');
 
   // Handle character input
   hiddenInput.addEventListener('keypress', handleKeypress);
 
   // Handle special keys (Enter, Backspace)
   hiddenInput.addEventListener('keydown', handleKeydown);
+
+  // Handle focus/blur for hint
+  hiddenInput.addEventListener('focus', handleFocus);
+  hiddenInput.addEventListener('blur', handleBlur);
 
   // Focus input when clicking on the container or document
   document.addEventListener('click', (e) => {
@@ -31,9 +37,20 @@ export function initTyping(container, input, onStart) {
       focusInput();
     }
   });
+}
 
-  // Initial focus
-  setTimeout(focusInput, 100);
+function handleFocus() {
+  // Hide hint when focused
+  if (hintElement) {
+    hintElement.classList.add('hidden');
+  }
+}
+
+function handleBlur() {
+  // Show hint again if no text has been typed
+  if (hintElement && !session.isActive) {
+    hintElement.classList.remove('hidden');
+  }
 }
 
 export function focusInput() {

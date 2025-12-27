@@ -5,8 +5,6 @@ import {
   getApiKey,
   setApiKey,
   getSessionText,
-  getSessionDuration,
-  getLineCount,
   resetSession,
   session
 } from './session.js';
@@ -26,8 +24,11 @@ const newSessionBtn = document.getElementById('new-session-btn');
 const loadingEl = document.getElementById('loading');
 const errorEl = document.getElementById('error');
 const hintEl = document.getElementById('hint');
-const sessionInfoEl = document.getElementById('session-info');
 const mindmapSvg = document.getElementById('mindmap-svg');
+const copyMindmapBtn = document.getElementById('copy-mindmap-btn');
+
+// Store current mindmap markdown for copying
+let currentMarkdown = '';
 
 // Initialize
 function init() {
@@ -48,12 +49,10 @@ function init() {
   // Button handlers
   endSessionBtn.addEventListener('click', handleEndSession);
   newSessionBtn.addEventListener('click', handleNewSession);
+  copyMindmapBtn.addEventListener('click', handleCopyMarkdown);
 
   // Initialize typing
   initTyping(textContainer, hiddenInput, handleSessionStart);
-
-  // Update session info periodically
-  setInterval(updateSessionInfo, 1000);
 }
 
 // API Key handling
@@ -84,12 +83,6 @@ function handleSessionStart() {
   endSessionBtn.classList.add('visible');
 }
 
-function updateSessionInfo() {
-  if (session.isActive) {
-    sessionInfoEl.textContent = `${getSessionDuration()} | ${getLineCount()} lines`;
-  }
-}
-
 async function handleEndSession() {
   const apiKey = apiKeyInput.value.trim();
 
@@ -111,6 +104,7 @@ async function handleEndSession() {
 
   try {
     const markdown = await analyzeSession(apiKey, sessionText);
+    currentMarkdown = markdown; // Store for copying
     renderMindMap(mindmapSvg, markdown);
     showView('mindmap');
   } catch (error) {
@@ -124,9 +118,9 @@ function handleNewSession() {
   resetSession();
   clearDisplay();
   clearMindMap(mindmapSvg);
+  currentMarkdown = ''; // Clear stored markdown
   hintEl.classList.remove('hidden');
   endSessionBtn.classList.remove('visible');
-  sessionInfoEl.textContent = '';
   showView('typing');
   focusInput();
 }
@@ -139,6 +133,7 @@ function showView(view) {
 
   endSessionBtn.classList.remove('visible');
   newSessionBtn.classList.remove('visible');
+  copyMindmapBtn.classList.remove('visible');
 
   switch (view) {
     case 'typing':
@@ -150,10 +145,29 @@ function showView(view) {
     case 'mindmap':
       mindmapView.classList.add('active');
       newSessionBtn.classList.add('visible');
+      copyMindmapBtn.classList.add('visible');
       break;
     case 'loading':
       loadingEl.classList.add('active');
       break;
+  }
+}
+
+// Copy markdown to clipboard
+async function handleCopyMarkdown() {
+  if (!currentMarkdown) return;
+
+  try {
+    await navigator.clipboard.writeText(currentMarkdown);
+    copyMindmapBtn.textContent = 'Copied!';
+    copyMindmapBtn.classList.add('copied');
+
+    setTimeout(() => {
+      copyMindmapBtn.textContent = 'Copy Markdown';
+      copyMindmapBtn.classList.remove('copied');
+    }, 2000);
+  } catch (error) {
+    showError('Failed to copy to clipboard');
   }
 }
 
